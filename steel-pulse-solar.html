@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Steel Pulse Solar</title>
+<meta name="description" content="Run a solar-install company. Win jobs, manage cash, build a crew, hit $1,000,000." />
+<meta name="theme-color" content="#1d9e75" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Steel Pulse Solar" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<style>
+  :root{
+    --ink:#14211c; --muted:#5d6b64; --line:#e2e7e2; --paper:#ffffff;
+    --bg:#eef3ee; --green:#1d9e75; --green-d:#0f6e56; --money:#0f7a4f;
+    --danger:#c0392b; --warn:#b8860b; --warnbg:#fdf3da; --sky1:#bfe3f7; --sky2:#eaf6ff;
+    --chip:#f1efe8; --accent:#185fa5; --accentbg:#e6f1fb;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;cursor:pointer;}
+  .wrap{max-width:1040px;margin:0 auto;padding:16px;}
+  .hidden{display:none !important;}
+
+  /* Start screen */
+  .start{max-width:680px;margin:6vh auto;padding:0 16px;}
+  .sun{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe39a,#f6b833);
+    margin:0 auto 14px;box-shadow:0 0 0 10px rgba(246,184,51,.18);}
+  .start h1{text-align:center;font-size:34px;margin:0 0 4px;letter-spacing:-.5px;}
+  .start .tag{text-align:center;color:var(--muted);margin:0 0 22px;font-size:16px;}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+    box-shadow:0 1px 2px rgba(20,33,28,.04);}
+  .card h2{font-size:17px;margin:0 0 12px;}
+  label.fld{display:block;font-size:13px;color:var(--muted);margin:0 0 6px;}
+  input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:15px;background:#fbfdfb;}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+  .mode{border:2px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;transition:.12s;background:#fbfdfb;}
+  .mode.sel{border-color:var(--green);background:#f0faf5;}
+  .mode h3{margin:0 0 4px;font-size:16px;}
+  .mode p{margin:0;font-size:13px;color:var(--muted);}
+  .how{font-size:13.5px;color:var(--muted);margin-top:16px;}
+  .how li{margin:3px 0;}
+  .btn{border:none;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:600;background:var(--green);color:#fff;}
+  .btn:hover{background:var(--green-d);}
+  .btn.block{width:100%;margin-top:16px;}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:500;}
+  .btn.ghost:hover{background:#f6f8f6;}
+  .btn.sm{padding:7px 12px;font-size:13px;border-radius:8px;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  /* Top bar */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    background:linear-gradient(180deg,var(--sky2),#fff);border:1px solid var(--line);border-radius:14px;padding:9px 16px;margin-bottom:14px;}
+  .co{display:flex;align-items:center;gap:11px;}
+  .co .dot{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe39a,#f6b833);}
+  .co b{font-size:16px;}
+  .co span{font-size:12.5px;color:var(--muted);}
+  .badge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:20px;background:var(--chip);color:var(--muted);}
+  .szn-good{background:#dcf2e8;color:#0f6e56;} .szn-warn{background:#fbeecb;color:#8a5a00;} .szn-bad{background:#dceaf7;color:#1c5f96;}
+  /* Beginner coaching tip bar */
+  .coach{display:flex;align-items:flex-start;gap:10px;background:#e8f4fb;border:1px solid #bfe0f3;border-radius:12px;padding:10px 14px;margin-bottom:12px;}
+  .coach-ic{font-size:20px;flex:none;line-height:1.35;}
+  .coach-txt{font-size:13.5px;color:#1c4e6e;line-height:1.45;flex:1;min-width:0;}
+  .coach-txt b{color:#0d3a57;font-weight:600;}
+  .coach-x{flex:none;border:none;background:transparent;color:#6a93ac;font-size:15px;cursor:pointer;padding:0 2px;line-height:1.35;}
+  .coach-x:hover{color:#0d3a57;}
+  .weekbox{display:flex;align-items:center;gap:12px;}
+  .weekbox .wk{font-size:14px;}
+
+  /* Stat cards */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:10px;}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:6px 12px;}
+  .stat .k{font-size:11px;color:var(--muted);margin:0;line-height:1.2;}
+  .stat .v{font-size:17px;font-weight:600;margin:1px 0 0;letter-spacing:-.3px;line-height:1.2;}
+  .v.money{color:var(--money);} .v.bad{color:var(--danger);} .v.warn{color:var(--warn);}
+  .stars{letter-spacing:2px;color:#f0a500;font-size:16px;}
+
+  /* Goal bar */
+  .goal{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 14px;margin-bottom:12px;}
+  .goal .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px;}
+  .track{height:10px;background:#eef1ee;border-radius:6px;overflow:hidden;}
+  .track > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#36c08e);}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:760px){.cols{grid-template-columns:1fr;}}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:11px 14px;}
+  .panel h2{font-size:15px;margin:0 0 8px;display:flex;align-items:center;gap:7px;}
+  .panel h2 .n{font-size:12px;color:var(--muted);font-weight:500;}
+
+  .job{margin-bottom:14px;}
+  .job:last-child{margin-bottom:0;}
+  .job .jr{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px;}
+  .job .jr b{font-weight:600;}
+  .job .pay{color:var(--money);font-weight:600;}
+  .job .sub{font-size:12px;color:var(--muted);margin:5px 0 0;}
+  .bar{height:8px;background:#eef1ee;border-radius:5px;overflow:hidden;}
+  .bar > i{display:block;height:100%;background:var(--green);}
+  .bar.queue > i{background:#c4cdc7;}
+
+  .lead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);}
+  .lead:last-child{border-bottom:none;}
+  .lead .li b{font-size:14px;}
+  .lead .li p{margin:2px 0 0;font-size:12px;color:var(--muted);}
+  .empty{color:var(--muted);font-size:13.5px;padding:8px 0;}
+
+  .mgmt{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+  @media(max-width:760px){.mgmt{grid-template-columns:1fr;}}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+  .row2.vtop{align-items:start;}
+  @media(max-width:760px){.row2{grid-template-columns:1fr;}}
+  .crewgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start;}
+  @media(max-width:680px){.crewgrid{grid-template-columns:1fr;}}
+  .crew3{display:grid;grid-template-columns:minmax(150px,0.85fr) 1fr 1fr;gap:0 22px;align-items:start;}
+  @media(max-width:760px){.crew3{grid-template-columns:1fr;}}
+  .evt{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border-radius:10px;font-size:13.5px;line-height:1.3;max-width:100%;}
+  .evt .evt-ic{font-size:18px;flex:none;}
+  .evt b{font-weight:600;}
+  .evt .evt-txt{font-weight:500;}
+  .evt-good{background:#dcf2e8;color:#0f6e56;}
+  .evt-bad{background:#fbe3e3;color:#a32d2d;}
+  .evt-warn{background:#fbeecb;color:#8a5a00;}
+  .person.elec .torso{background:#2f6fb0;}
+  .person.elec .hat{background:#e8b923;}
+  .frozen{position:sticky;top:0;z-index:30;background:var(--bg);padding:8px 0 4px;box-shadow:0 9px 16px -12px rgba(20,33,28,.4);}
+  .frozen .top, .frozen .goal{margin-bottom:8px;}
+  .yard{display:flex;gap:16px;align-items:flex-end;overflow-x:auto;padding:4px 2px 6px;min-height:46px;}
+  .truckgroup{display:flex;align-items:flex-end;gap:5px;flex:none;}
+  .crewrow{display:flex;align-items:flex-end;gap:4px;height:30px;}
+  .crewrow .more{font-size:11px;color:var(--muted);align-self:center;white-space:nowrap;}
+  .person{position:relative;width:13px;height:24px;flex:none;transform-origin:50% 100%;}
+  .person .hat{position:absolute;top:0;left:1px;width:11px;height:4px;border-radius:5px 5px 1px 1px;background:#f0a500;}
+  .person .head{position:absolute;top:3px;left:2.5px;width:8px;height:7px;border-radius:50%;background:#e7b98a;}
+  .person .torso{position:absolute;top:9px;left:.5px;width:12px;height:14px;border-radius:4px 4px 3px 3px;background:#1d9e75;}
+  .person.over{animation:bobFast .5s infinite ease-in-out;}
+  .person.over .hat{background:#d85a30;}
+  .person.over::after{content:'';position:absolute;top:3px;right:-3px;width:3px;height:4px;border-radius:0 50% 50% 50%;background:#7fd3ff;animation:sweat 1s infinite;}
+  .person.ok{animation:bob 1.3s infinite ease-in-out;}
+  .person.bored{animation:sway 3.4s infinite ease-in-out;}
+  .person.bored .torso{background:#9aa39d;}
+  .person.bored .hat{background:#b9bdb6;}
+  .person.bored::after{content:'z';position:absolute;top:-7px;right:-6px;font-size:10px;font-weight:600;color:#a7b0aa;animation:zfloat 2.6s infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+  @keyframes bobFast{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}
+  @keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+  @keyframes sweat{0%{opacity:0;transform:translateY(0)}25%{opacity:1}100%{opacity:0;transform:translateY(7px)}}
+  @keyframes zfloat{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+  .yardcap{font-size:12px;margin:2px 0 8px;text-align:center;font-weight:500;}
+  .line{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .line:last-child{border-bottom:none;}
+  .line > div:last-child{white-space:nowrap;display:flex;gap:6px;justify-content:flex-end;flex:none;}
+  .line .d{font-size:12px;color:var(--muted);}
+  input[type=range]{width:100%;accent-color:var(--green);}
+  .slideval{font-size:14px;font-weight:600;}
+
+  .log{margin-top:14px;}
+  .log .e{font-size:13px;padding:7px 0;border-bottom:1px solid var(--line);color:var(--muted);}
+  .log .e:last-child{border-bottom:none;}
+  .log .e b{color:var(--ink);}
+
+  .actbar{position:sticky;bottom:0;margin-top:16px;background:linear-gradient(180deg,rgba(238,243,238,0),var(--bg) 40%);padding:14px 0 4px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn.big{padding:14px 28px;font-size:16px;border-radius:12px;}
+
+  /* Modal */
+  .scrim{position:fixed;inset:0;background:rgba(20,33,28,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50;}
+  .modal{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:22px 24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.25);}
+  .modal .ic{font-size:34px;margin-bottom:6px;}
+  .modal h2{font-size:21px;margin:0 0 8px;}
+  .modal p{color:var(--muted);font-size:14.5px;margin:0 0 18px;}
+  .modal .row2{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .big-num{font-size:30px;font-weight:700;color:var(--money);margin:6px 0;}
+
+  /* Mobile: compress vertically so more fits without scrolling (phones only) */
+  @media(max-width:560px){
+    .wrap{padding:8px;}
+    .frozen{padding:2px 0 2px;}
+    .top{padding:6px 11px;margin-bottom:6px;}
+    .frozen .top{gap:5px !important;}
+    .hdrow1, .hdrow2{gap:5px 10px !important;}
+    .hdrow2{padding-top:5px !important;}
+    .co{gap:8px;}
+    .co .dot{width:24px;height:24px;}
+    .co b{font-size:15px;line-height:1.2;}
+    .co span{font-size:11px;}
+    .badge{padding:1px 6px;font-size:10px;}
+    .wk{font-size:12.5px;}
+    .track{width:80px !important;height:8px;}
+    #mkt{width:100px !important;}
+    .stats{gap:5px;margin-bottom:6px;}
+    .stat{padding:3px 9px;}
+    .stat .k{font-size:10px;}
+    .stat .v{font-size:14.5px;}
+    .panel{padding:8px 10px;margin-bottom:7px !important;}
+    .panel h2{font-size:13.5px;margin-bottom:5px;}
+    .crew3{gap:0 14px;}
+    .line{padding:3px 0;font-size:12.5px;gap:8px;}
+    .btn{padding:9px 14px;font-size:14px;}
+    .btn.sm{padding:5px 9px;font-size:12px;}
+    .yard{min-height:36px;gap:11px;padding:2px 2px 4px;}
+    .yardcap{font-size:11px;margin:3px 0 6px;}
+    .job{margin-bottom:9px;}
+    .row2, .mgmt{gap:7px;}
+    .coach{padding:7px 10px;margin-bottom:7px;}
+    .coach-txt{font-size:12.5px;line-height:1.4;}
+    .evt{display:flex;align-items:flex-start;}
+    .ld-detail{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== START SCREEN ===================== -->
+<div id="start" class="start">
+  <div class="sun"></div>
+  <h1>Steel Pulse Solar</h1>
+  <p class="tag">Run a solar-install company. Win jobs, manage cash, build a crew, hit $1,000,000.</p>
+
+  <div class="card">
+    <h2>Start a new company</h2>
+    <label class="fld" for="coname">Company name</label>
+    <input type="text" id="coname" value="Steel Pulse Solar" maxlength="28" />
+
+    <div class="modes" id="modes">
+      <div class="mode sel" data-mode="realistic">
+        <h3>Realistic</h3>
+        <p>Real solar margins, tighter cash, tougher events. Learn the business.</p>
+      </div>
+      <div class="mode" data-mode="arcade">
+        <h3>Beginner</h3>
+        <p>New to solar? Learn how the business works with gentler money, plain-language coaching, and no pressure.</p>
+      </div>
+    </div>
+
+    <ul class="how">
+      <li><b>Each turn is one week.</b> Accept jobs, assign nothing (your crew auto-works the active jobs), then click Advance week.</li>
+      <li><b>Watch cash, not just sales.</b> You pay for panels up front and collect a deposit, then get the rest when the job finishes.</li>
+      <li><b>Staff each job with about 3-4 crew.</b> Too few and quality drops and jobs crawl, too many and you pay idle hands. More trucks let you run more jobs at once.</li>
+      <li><b>Goal:</b> grow net worth to $1,000,000. Hit $0 cash with no credit left and you go bankrupt.</li>
+    </ul>
+
+    <button class="btn block" onclick="startGame()">Start company</button>
+    <button class="btn ghost block" id="resumeBtn" onclick="resumeGame()" style="margin-top:8px;">Resume saved game</button>
+  </div>
+  <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:14px;">Tip: bookmark this file or host it free to share with friends. Progress saves in your browser.</p>
+</div>
+
+<!-- ===================== GAME SCREEN ===================== -->
+<div id="game" class="wrap hidden">
+
+  <div class="frozen">
+  <div class="top" style="flex-direction:column;align-items:stretch;gap:7px;">
+    <!-- row 1: company (left) + Advance week (top, always reachable) -->
+    <div class="hdrow1" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div class="co">
+        <div class="dot"></div>
+        <div>
+          <b id="coLabel">Steel Pulse Solar</b><br>
+          <span id="coSub">1-crew operation</span> <span class="badge" id="modeBadge">Realistic</span>
+        </div>
+      </div>
+      <button class="btn" onclick="advanceWeek()" id="advanceBtn" style="padding:9px 16px;font-size:15px;white-space:nowrap;flex:none;">Advance week ▸</button>
+    </div>
+    <!-- row 2: week + season + goal + marketing -->
+    <div class="hdrow2" style="display:flex;align-items:center;gap:7px 12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:7px;">
+      <span class="wk" style="white-space:nowrap;">Week <b id="wkNum">1</b></span>
+      <span id="seasonChip" class="badge" style="display:none;"></span>
+      <span style="font-size:12.5px;color:var(--muted);white-space:nowrap;">Goal $1M</span>
+      <div class="track" style="width:90px;"><i id="goalFill" style="width:0%"></i></div>
+      <span id="goalPctTxt" style="font-size:12.5px;font-weight:500;white-space:nowrap;">0%</span>
+      <span style="font-size:12.5px;color:var(--muted);white-space:nowrap;">Marketing</span>
+      <input type="range" id="mkt" min="0" max="2000" step="100" value="0" oninput="onMkt(this.value)" style="width:110px;flex:none;" />
+      <span class="slideval" id="mktVal" style="font-size:12.5px;white-space:nowrap;">$0/wk</span>
+    </div>
+  </div>
+
+  <!-- event banner: own full-width row so a long event never inflates the header -->
+  <div id="eventBanner"></div>
+
+  <div class="stats" id="stats"></div>
+  </div><!-- /frozen -->
+
+  <!-- beginner coaching tip -->
+  <div id="coachBar" style="display:none;"></div>
+
+  <!-- crew & equipment (full width, 3 columns) -->
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="crew3">
+      <div>
+        <h2>Crew &amp; equipment</h2>
+        <div id="yard" class="yard"></div>
+        <p id="yardCap" class="yardcap" style="margin:6px 0 0;text-align:left;"></p>
+        <div id="matRow" style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;">
+          <span>Panel stock <b id="matStock" style="color:var(--accent);">$0</b></span>
+          <button class="btn sm" onclick="buyPanels(5000)">+ $5k</button>
+          <span class="d" style="font-size:11px;color:var(--muted);">10% off, hedges spikes</span>
+        </div>
+      </div>
+      <div>
+        <div class="line">
+          <div>Installers <span class="d" id="crewD"></span></div>
+          <div>
+            <button class="btn ghost sm" onclick="fireInstaller()" id="fireBtn">- Lay off</button>
+            <button class="btn sm" onclick="hireInstaller()" id="hireBtn">+ Hire</button>
+          </div>
+        </div>
+        <div class="line" id="elecRow">
+          <div>Electricians <span class="d" id="elecD"></span></div>
+          <div>
+            <button class="btn ghost sm" onclick="fireElectrician()" id="fireElecBtn">- Lay off</button>
+            <button class="btn sm" onclick="hireElectrician()" id="hireElecBtn">+ Hire</button>
+          </div>
+        </div>
+        <div class="line" style="border-bottom:none;">
+          <div>Trucks <span class="d" id="truckD"></span></div>
+          <div>
+            <button class="btn ghost sm" onclick="sellTruck()" id="sellBtn">- Sell</button>
+            <button class="btn sm" onclick="buyTruck()" id="buyBtn">+ Buy</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="line">
+          <div>Crew load <span class="d">aim 3-4</span></div>
+          <div id="staff" style="font-size:14px;font-weight:600;color:var(--muted);">—</div>
+        </div>
+        <div class="line" id="elecLoadRow">
+          <div>Elec crew <span class="d">aim 2/job</span></div>
+          <div id="elecStaff" style="font-size:14px;font-weight:600;color:var(--muted);">—</div>
+        </div>
+        <div class="line">
+          <div>Weekly overhead</div>
+          <div class="v bad" id="ovh" style="font-size:16px;font-weight:600;">-$0</div>
+        </div>
+        <div class="line" style="border-bottom:none;">
+          <div>Cash flow <span class="d">last week</span></div>
+          <div id="cashflow" style="font-size:16px;font-weight:600;">$0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- new leads + active jobs (2 columns) -->
+  <div class="row2 vtop">
+    <div class="panel">
+      <h2>New leads this week <span class="n" id="leadHint"></span></h2>
+      <div id="leads"></div>
+    </div>
+    <div class="panel">
+      <h2>Active jobs <span class="n" id="jobCap"></span></h2>
+      <div id="jobs"></div>
+    </div>
+  </div>
+
+  <!-- bottom: neighborhood (full width) -->
+  <div class="panel" style="margin-bottom:10px;">
+    <h2>Your neighborhood <span class="n" id="hoodTally"></span></h2>
+    <div id="hood" style="display:flex;gap:7px;align-items:flex-end;overflow-x:auto;padding:6px 2px 2px;"></div>
+  </div>
+
+  <!-- bottom: job log (full width) -->
+  <div class="panel" style="margin-bottom:10px;">
+    <h2>Job log <span class="n" id="tally"></span></h2>
+    <div class="log" id="log" style="margin-top:0;max-height:240px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- modal mount -->
+<div id="modalMount"></div>
+
+<script>
+/* ============================================================
+   Steel Pulse Solar - Phase 1
+   Single-file game. Tune the MODES numbers to match real economics.
+   ============================================================ */
+
+const GOAL = 1000000;
+
+const MODES = {
+  realistic: {
+    label:'Realistic', startCash:15000, creditLimit:25000, loanRate:0.005,
+    pricePerWatt:3.00, materialPerWatt:0.95, baseOverhead:600, installerSalary:1200,
+    truckCost:8000, truckUpkeep:100, truckResale:5000, depositPct:0.25,
+    eventChance:0.30, startRep:60, crewSpeed:1.0, mktMax:2000,
+    permitWeeks:1, payDelay:3, hireLeadWeeks:2, quitFreezeWeeks:1, truckDownWeeks:1, truckDeliveryWeeks:1, cancelChance:0.05,
+    elecSalary:1600, needsElectricians:true, bulkDiscount:0.90, inventory:true, seasonality:true, coaching:false
+  },
+  arcade: {
+    label:'Beginner', startCash:30000, creditLimit:40000, loanRate:0.003,
+    pricePerWatt:3.50, materialPerWatt:0.70, baseOverhead:500, installerSalary:1000,
+    truckCost:6000, truckUpkeep:60, truckResale:4000, depositPct:0.50,
+    eventChance:0.22, startRep:70, crewSpeed:1.3, mktMax:3000,
+    permitWeeks:0, payDelay:2, hireLeadWeeks:0, quitFreezeWeeks:0, truckDownWeeks:0, truckDeliveryWeeks:0, cancelChance:0,
+    elecSalary:1200, needsElectricians:false, bulkDiscount:1, inventory:false, seasonality:true, coaching:true
+  }
+};
+
+/* ---------- seasons (Realistic only) ----------
+   Year = 52 weeks, 13 per season. Game starts in Spring -> Summer (ramp up),
+   then Fall -> Winter (the cash-cushion test). demand scales lead volume,
+   speed scales install progress. */
+const SEASONS = [
+  {key:'spring', label:'Spring', ic:'🌷', demand:1.15, speed:1.00, note:'busy season', cls:'good'},
+  {key:'summer', label:'Summer', ic:'☀️', demand:1.35, speed:1.10, note:'peak season', cls:'good'},
+  {key:'fall',   label:'Fall',   ic:'🍂', demand:1.00, speed:0.95, note:'steady',      cls:'warn'},
+  {key:'winter', label:'Winter', ic:'❄️', demand:0.55, speed:0.70, note:'slow season', cls:'bad'}
+];
+function seasonOf(week){ const w=((week-1)%52+52)%52; return SEASONS[Math.floor(w/13)]; }
+function season(){ return seasonOf(state.week); }
+function seasonDemand(){ return cfg.seasonality ? season().demand : 1; }
+function seasonSpeed(){ return cfg.seasonality ? season().speed : 1; }
+function weeksLeftInSeason(){ const w=((state.week-1)%52+52)%52; return 13 - (w%13); }
+
+const STREETS = ['Maple St','Oak Ave','Pine Rd','Elm Ct','Birch Ln','Cedar Way','Willow Dr',
+  'Aspen Cir','Spruce Pl','Hickory Rd','Magnolia Ln','Juniper Ct','Sycamore Dr','Poplar St',
+  'Chestnut Ave','Walnut Way','Dogwood Ln','Redwood Rd','Sequoia Ct','Laurel Dr'];
+
+const ROOFS = [
+  {key:'easy',     label:'Easy roof',        work:0.8, mat:1.00, w:3},
+  {key:'standard', label:'Standard',          work:1.0, mat:1.00, w:5},
+  {key:'steep',    label:'Steep roof',        work:1.4, mat:1.05, w:3},
+  {key:'complex',  label:'Tricky electrical', work:1.6, mat:1.10, w:2}
+];
+
+const EVENT_KIND = {'Rain delay':'warn','Cold snap':'warn','Heat wave':'warn','Passed inspection':'good','Failed inspection':'bad','Panel prices spike':'bad','Five-star review':'good','Truck breakdown':'bad','Neighbor referral':'good','Tax credit boost':'good','Tax credit scare':'bad','Installer quit':'bad'};
+
+let cfg = MODES.realistic;
+let state = null;
+let leadSeq = 0;
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function money(n){ const r=Math.round(n); return (r<0?'-$':'$')+Math.abs(r).toLocaleString(); }
+function rnd(a,b){ return a + Math.random()*(b-a); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function weightedRoof(){
+  const total = ROOFS.reduce((s,r)=>s+r.w,0); let x=Math.random()*total;
+  for(const r of ROOFS){ if(x<r.w) return r; x-=r.w; } return ROOFS[1];
+}
+function stars(rep){
+  const s=Math.max(0,Math.min(5,Math.round(rep/20)));
+  return '★★★★★'.slice(0,s)+'☆☆☆☆☆'.slice(0,5-s);
+}
+
+/* ---------- lead generation ---------- */
+function makeLead(){
+  const roof = weightedRoof();
+  // bigger jobs become more likely as reputation climbs
+  const repBoost = state ? (state.reputation-50)/50 : 0;
+  let sizes = [4,5,6,8,10,12];
+  if(repBoost>0.2) sizes = sizes.concat([12,14]);
+  if(repBoost>0.5) sizes = sizes.concat([14,16,18]);
+  const kW = pick(sizes);
+  const watts = kW*1000;
+  const matMult = (state? state.materialMultiplier:1) * roof.mat;
+  const revenue = Math.round(watts * cfg.pricePerWatt * rnd(0.95,1.08));
+  const materialCost = Math.round(watts * cfg.materialPerWatt * matMult);
+  const workRequired = Math.max(1, Math.round(kW/4 * roof.work));
+  const deposit = Math.round(revenue * cfg.depositPct);
+  return {
+    id:++leadSeq, street:pick(STREETS), kW, roof:roof.label, roofKey:roof.key,
+    revenue, materialCost, workRequired, deposit, remaining:revenue-deposit
+  };
+}
+function genLeads(){
+  let base = 2;
+  const mk = state.marketing;
+  const fromMkt = 3*(1-Math.exp(-mk/900));         // diminishing returns
+  const fromRep = (state.reputation-50)/18;
+  let n = Math.round((base + fromMkt + fromRep) * state.demandMultiplier * seasonDemand());
+  n = Math.max(1, Math.min(6, n));
+  const out=[]; for(let i=0;i<n;i++) out.push(makeLead());
+  // sometimes a referral lead with better terms
+  if(state.pendingReferral){ const l=makeLead(); l.revenue=Math.round(l.revenue*1.1); l.remaining=l.revenue-l.deposit; l.referral=true; out.unshift(l); state.pendingReferral=false; }
+  state.leads = out;
+}
+
+/* ---------- new game ---------- */
+function startGame(){
+  const modeKey = document.querySelector('.mode.sel').dataset.mode;
+  cfg = MODES[modeKey];
+  const name = ($('coname').value||'Steel Pulse Solar').trim();
+  state = {
+    mode:modeKey, company:name, week:1,
+    cash:cfg.startCash, loan:0, reputation:cfg.startRep,
+    installers:0, trucks:1, marketing:0,
+    leads:[], jobs:[],
+    materialMultiplier:1, materialMultiplierWeeks:0,
+    demandMultiplier:1, demandWeeks:0,
+    pendingReferral:false,
+    completedJobs:0, revenueTotal:0, prevWeekCash:cfg.startCash, lastCashFlow:0,
+    hireQueue:[], hireFreeze:0, truckQueue:[], truckDownWeeks:0, lastEvent:null,
+    electricians:0, materialStock:0,
+    seenTips:{}, activeTip:null,
+    log:[], gameOver:false, won:false
+  };
+  logMsg('Founded <b>'+name+'</b>. Time to sell some sunshine.');
+  genLeads();
+  maybeCoach();
+  $('mkt').max = cfg.mktMax;
+  save();
+  showGame();
+}
+
+function showGame(){
+  $('start').classList.add('hidden');
+  $('game').classList.remove('hidden');
+  render();
+}
+
+/* ---------- mode selector ---------- */
+document.querySelectorAll('.mode').forEach(m=>{
+  m.addEventListener('click',()=>{
+    document.querySelectorAll('.mode').forEach(x=>x.classList.remove('sel'));
+    m.classList.add('sel');
+  });
+});
+
+/* ---------- derived ---------- */
+function crewUnits(){ return 1 + state.installers; }
+function overhead(){ return cfg.baseOverhead + state.installers*cfg.installerSalary + (state.electricians||0)*(cfg.elecSalary||0) + state.trucks*cfg.truckUpkeep; }
+function netWorth(){ return state.cash + state.trucks*cfg.truckResale - state.loan; }
+function availableCredit(){ return cfg.creditLimit - state.loan; }
+function effectiveTrucks(){ return Math.max(0, state.trucks - (state.truckDownWeeks>0?1:0)); }
+function installJobs(){ return state.jobs.filter(j=>j.stage==='install'); }
+function receivables(){ return state.jobs.filter(j=>j.stage==='await').reduce((s,j)=>s+j.remaining,0); }
+function activeJobCount(){ return Math.min(effectiveTrucks(), installJobs().length); }
+function crewPerJob(){ const a=activeJobCount(); return a>0 ? crewUnits()/a : null; }
+function staffing(){
+  const r = crewPerJob();
+  if(r===null) return {ratio:null, label:'No active jobs', cls:'idle', failChance:0.15};
+  let label, cls;
+  if(r<2){ label='Understaffed'; cls='bad'; }
+  else if(r<3){ label='Stretched'; cls='warn'; }
+  else if(r<=4){ label='Well staffed'; cls='good'; }
+  else { label='Overstaffed'; cls='warn'; }
+  const failChance = r>=3 ? 0.08 : Math.max(0.08, Math.min(0.85, (3-r)*0.28 + 0.08));
+  return {ratio:r, label, cls, failChance};
+}
+function elecPerJob(){ const a=activeJobCount(); return a>0 ? (state.electricians||0)/a : null; }
+function elecStaffing(){
+  if(!cfg.needsElectricians) return null;
+  const r=elecPerJob();
+  if(r===null) return {ratio:null, label:'no active jobs', cls:'idle'};
+  let label, cls;
+  if(r>=2){ label='Full crew'; cls='good'; }
+  else if(r>=1){ label='Short'; cls='warn'; }
+  else { label='None on site'; cls='bad'; }
+  return {ratio:r, label, cls};
+}
+function elecFactor(){
+  if(!cfg.needsElectricians) return 1;
+  const r=elecPerJob(); if(r===null) return 1;
+  return Math.min(1, 0.5 + 0.25*r);    // 0 electricians -> half speed, 2 per job -> full speed
+}
+function elecInspectionPenalty(){
+  if(!cfg.needsElectricians) return 0;
+  const r=elecPerJob(); if(r===null) return 0;
+  return Math.max(0, (2-r)/2) * 0.25;  // no electricians -> +25% inspection fail chance
+}
+
+/* ---------- actions ---------- */
+function acceptLead(id){
+  const lead = state.leads.find(l=>l.id===id); if(!lead) return;
+  const fromStock = (cfg.inventory && state.materialStock>0) ? Math.min(state.materialStock, lead.materialCost) : 0;
+  const matCash = lead.materialCost - fromStock;
+  const net = lead.deposit - matCash;
+  let cash = state.cash + net, loan = state.loan;
+  if(cash<0){
+    const need=-cash;
+    if(need>availableCredit()){ toast('Not enough cash or credit to buy materials for this job.'); return; }
+    loan+=need; cash=0;
+  }
+  state.cash=cash; state.loan=loan;
+  if(fromStock>0) state.materialStock-=fromStock;
+  const stage = cfg.permitWeeks>0 ? 'permit' : 'install';
+  state.jobs.push({...lead, workDone:0, weeks:0, stage:stage, permitLeft:cfg.permitWeeks, awaitLeft:0});
+  state.leads = state.leads.filter(l=>l.id!==id);
+  const matMsg = fromStock>0 ? ('Materials '+money(lead.materialCost)+' ('+money(fromStock)+' from stock, '+money(matCash)+' cash)') : ('Paid '+money(matCash)+' materials');
+  logMsg('Signed <b>'+lead.street+'</b> ('+lead.kW+' kW). '+matMsg+', banked '+money(lead.deposit)+' deposit.'+(cfg.permitWeeks>0?' Permit pending.':''));
+  maybeCoach(); save(); render();
+}
+function declineLead(id){
+  state.leads = state.leads.filter(l=>l.id!==id); render();
+}
+function hireInstaller(){
+  if(state.hireFreeze>0){ toast('Still backfilling the crew after a departure. You can hire again in '+state.hireFreeze+' week'+(state.hireFreeze>1?'s':'')+'.'); return; }
+  if(cfg.hireLeadWeeks>0){ state.hireQueue.push(cfg.hireLeadWeeks); logMsg('Started recruiting an installer. Joins in '+cfg.hireLeadWeeks+' weeks (no payroll until then).'); }
+  else { state.installers++; logMsg('Hired an installer. Payroll is up '+money(cfg.installerSalary)+'/week.'); }
+  save(); render();
+}
+function fireInstaller(){ if(state.installers<=0) return; state.installers--; logMsg('Laid off an installer to cut overhead.'); save(); render(); }
+function hireElectrician(){ state.electricians=(state.electricians||0)+1; logMsg('Hired a licensed electrician. Payroll is up '+money(cfg.elecSalary)+'/week.'); save(); render(); }
+function fireElectrician(){ if((state.electricians||0)<=0) return; state.electricians--; logMsg('Let an electrician go.'); save(); render(); }
+function buyPanels(amount){
+  if(!cfg.inventory) return;
+  const cost = Math.round(amount * cfg.bulkDiscount);
+  if(state.cash + availableCredit() < cost){ toast('Not enough cash or credit to stock '+money(amount)+' of panels.'); return; }
+  let cash=state.cash-cost, loan=state.loan;
+  if(cash<0){ loan+=-cash; cash=0; }
+  state.cash=cash; state.loan=loan;
+  state.materialStock=(state.materialStock||0)+amount;
+  logMsg('Stocked '+money(amount)+' of panels for '+money(cost)+' ('+Math.round((1-cfg.bulkDiscount)*100)+'% bulk discount). Stock now '+money(state.materialStock)+'.');
+  save(); render();
+}
+function buyTruck(){
+  if(state.cash + availableCredit() < cfg.truckCost){ toast('Not enough cash or credit for a truck.'); return; }
+  let cash=state.cash-cfg.truckCost, loan=state.loan;
+  if(cash<0){ loan+=-cash; cash=0; }
+  state.cash=cash; state.loan=loan;
+  if(cfg.truckDeliveryWeeks>0){ state.truckQueue.push(cfg.truckDeliveryWeeks); logMsg('Ordered a truck for '+money(cfg.truckCost)+'. Arrives in '+cfg.truckDeliveryWeeks+' week'+(cfg.truckDeliveryWeeks>1?'s':'')+'.'); }
+  else { state.trucks++; logMsg('Bought a truck for '+money(cfg.truckCost)+'. You can now run '+state.trucks+' jobs at once.'); }
+  save(); render();
+}
+function sellTruck(){
+  if(state.trucks<=1){ toast('You need at least one truck.'); return; }
+  state.trucks--; state.cash+=cfg.truckResale;
+  logMsg('Sold a truck for '+money(cfg.truckResale)+'.'); save(); render();
+}
+function onMkt(v){ state.marketing=+v; $('mktVal').textContent=money(+v)+'/wk'; save(); updateOverheadLabel(); }
+
+/* ---------- advance one week ---------- */
+function advanceWeek(){
+  if(state.gameOver) return;
+  state.lastEvent=null;
+
+  // 1. marketing spend
+  if(state.marketing>0){ spend(state.marketing); }
+
+  // 2. permit waits + cancellations on jobs not yet installed
+  state.jobs.forEach(j=>{
+    if(j.stage==='permit'){
+      if(cfg.cancelChance>0 && Math.random()<cfg.cancelChance){ j.cancelled=true; return; }
+      j.permitLeft--;
+      if(j.permitLeft<=0) j.stage='install';
+    }
+  });
+  state.jobs.filter(j=>j.cancelled).forEach(j=>{
+    const restock=Math.round(j.materialCost*0.5);
+    state.cash += restock - j.deposit;
+    logMsg('<b>'+j.street+'</b> cancelled before install. Refunded the '+money(j.deposit)+' deposit, recovered '+money(restock)+' in materials.');
+  });
+  state.jobs = state.jobs.filter(j=>!j.cancelled);
+
+  // 3. crew works install-stage jobs within truck capacity
+  const installs = state.jobs.filter(j=>j.stage==='install');
+  const active = installs.slice(0, effectiveTrucks());
+  if(active.length>0){
+    const per = (crewUnits()*cfg.crewSpeed/3)/active.length * elecFactor() * seasonSpeed();
+    active.forEach(j=>{ j.workDone+=per; j.weeks++; });
+  }
+
+  // 4. jobs that have finished their inspection + utility wait get paid
+  state.jobs.forEach(j=>{
+    if(j.stage==='await'){ j.awaitLeft--; if(j.awaitLeft<=0){ state.cash+=j.remaining; state.revenueTotal+=j.revenue; j.stage='paid';
+      logMsg('Final payment cleared on <b>'+j.street+'</b>. Collected '+money(j.remaining)+'.'); } }
+  });
+
+  // 5. install completions -> awaiting payment (or pay now if no delay)
+  state.jobs.forEach(j=>{
+    if(j.stage==='install' && j.workDone>=j.workRequired){
+      let dRep = (j.weeks <= j.workRequired+0.5) ? rnd(0.6,1.8) : -rnd(0.4,1.2);
+      if(j.referral) dRep += 0.5;
+      state.reputation = Math.max(0, Math.min(100, state.reputation + dRep));
+      state.completedJobs++;
+      if(cfg.payDelay>0){ j.stage='await'; j.awaitLeft=cfg.payDelay;
+        logMsg('Installed <b>'+j.street+'</b>. Waiting on inspection and utility sign-off before the '+money(j.remaining)+' final payment.'); }
+      else { state.cash+=j.remaining; state.revenueTotal+=j.revenue; j.stage='paid';
+        logMsg('Finished <b>'+j.street+'</b>. Collected '+money(j.remaining)+'.'); }
+    }
+  });
+  state.jobs = state.jobs.filter(j=>j.stage!=='paid');
+
+  // 6. recruiting pipeline + hire freeze
+  if(state.hireQueue.length){
+    state.hireQueue = state.hireQueue.map(w=>w-1);
+    const joined = state.hireQueue.filter(w=>w<=0).length;
+    if(joined>0){ state.installers+=joined; logMsg(joined+' new installer'+(joined>1?'s':'')+' started. Payroll is up.'); }
+    state.hireQueue = state.hireQueue.filter(w=>w>0);
+  }
+  if(state.hireFreeze>0) state.hireFreeze--;
+
+  // 7. truck deliveries + downtime
+  if(state.truckQueue.length){
+    state.truckQueue = state.truckQueue.map(w=>w-1);
+    const arrived = state.truckQueue.filter(w=>w<=0).length;
+    if(arrived>0){ state.trucks+=arrived; logMsg(arrived+' truck'+(arrived>1?'s':'')+' arrived. You can run '+state.trucks+' jobs at once.'); }
+    state.truckQueue = state.truckQueue.filter(w=>w>0);
+  }
+  if(state.truckDownWeeks>0) state.truckDownWeeks--;
+
+  // 8. overhead
+  spend(overhead());
+
+  // 5. loan interest
+  if(state.loan>0) state.loan = Math.round(state.loan*(1+cfg.loanRate));
+
+  // 6. settle: cover any shortfall from credit, else bankruptcy
+  if(state.cash<0){
+    const need=-state.cash;
+    if(need<=availableCredit()){ state.loan+=need; state.cash=0; logMsg('Drew '+money(need)+' from the credit line to cover the week.'); }
+    else { return bankrupt(); }
+  }
+
+  // 7. tick down temporary effects
+  if(state.materialMultiplierWeeks>0){ state.materialMultiplierWeeks--; if(state.materialMultiplierWeeks===0){ state.materialMultiplier=1; } }
+  if(state.demandWeeks>0){ state.demandWeeks--; if(state.demandWeeks===0){ state.demandMultiplier=1; } }
+
+  // 8. random event -> header banner instead of a modal
+  let evt=null;
+  if(Math.random()<cfg.eventChance) evt=rollEvent();
+  if(evt){ state.lastEvent={ic:evt.ic, title:evt.title, text:evt.text, kind:EVENT_KIND[evt.title]||'warn'}; logMsg('<b>'+evt.title+'.</b> '+evt.text); }
+
+  // weekly cash flow = operating change, measured before any debt paydown
+  state.lastCashFlow = state.cash - (state.prevWeekCash==null ? state.cash : state.prevWeekCash);
+  // auto-repay the credit line with spare cash above a ~2-week overhead cushion
+  if(state.loan>0 && state.cash>0){
+    const cushion = Math.max(2500, overhead()*2);
+    const pay = Math.min(Math.max(0, state.cash - cushion), state.loan);
+    if(pay>0){ state.cash-=pay; state.loan-=pay; if(state.loan===0) logMsg('Credit line paid off. Nice.'); }
+  }
+  state.prevWeekCash = state.cash;
+
+  // 9. next week
+  state.week++;
+  genLeads();
+  maybeCoach();
+
+  // 10. win check
+  if(netWorth()>=GOAL){ state.won=true; state.gameOver=true; save(); render(); return showWin(); }
+
+  save(); render();
+}
+
+function spend(n){ state.cash-=n; }
+
+/* ---------- events ---------- */
+function rollEvent(){
+  const opts=[];
+  const active = state.jobs.filter(j=>j.stage==='install').slice(0, effectiveTrucks());
+  const sk = cfg.seasonality ? season().key : null;
+  if(active.length>0){
+    opts.push('rain','inspection');
+    // weather skews by season: more rain in spring, snow in winter, heat in summer
+    if(sk==='spring') opts.push('rain');
+    else if(sk==='winter') opts.push('snow','snow');
+    else if(sk==='summer') opts.push('heat');
+  }
+  opts.push('priceSpike','review','breakdown','referral','itcUp','itcDown');
+  if(state.installers>0) opts.push('quit');
+  const e = pick(opts);
+
+  if(e==='rain'){ const j=pick(active); j.workDone=Math.max(0,j.workDone-1);
+    return {ic:'🌧️',title:'Rain delay',text:'Storms rolled through and pushed back the '+j.street+' install. You lost about a week of progress.'}; }
+
+  if(e==='snow'){ const j=pick(active); j.workDone=Math.max(0,j.workDone-1.5);
+    return {ic:'❄️',title:'Cold snap',text:'Snow and ice shut down the '+j.street+' roof for safety. Winter weather cost you about a week and a half of progress.'}; }
+
+  if(e==='heat'){ const j=pick(active); j.workDone=Math.max(0,j.workDone-0.6);
+    return {ic:'🥵',title:'Heat wave',text:'A scorcher forced the crew off the '+j.street+' roof during peak afternoon heat. Minor delay, but everyone stayed safe.'}; }
+
+  if(e==='inspection'){
+    const s = staffing();
+    const fail = Math.min(0.95, s.failChance + elecInspectionPenalty());
+    if(Math.random() > fail){
+      state.reputation = Math.min(100, state.reputation + rnd(0.3,0.8));
+      return {ic:'✅',title:'Passed inspection',text:'An inspector came by and the work checked out clean. A full crew with a licensed electrician on site passes far more often.'};
+    }
+    const mult = (s.ratio!==null && s.ratio<2) ? 1.4 : 1.0;
+    const cost = Math.round(rnd(800,1800)*mult);
+    spend(cost); coverShort();
+    const elecShort = cfg.needsElectricians && elecPerJob()!==null && elecPerJob()<1;
+    return {ic:'📋',title:'Failed inspection',text:'An inspector flagged a job. Rework cost you '+money(cost)+'. '+(elecShort?'A licensed electrician on the crew would cut these.':'Staff each job with a full 3-4 person crew to fail this less often.')}; }
+
+  if(e==='priceSpike'){ state.materialMultiplier=1.3; state.materialMultiplierWeeks=3;
+    return {ic:'📈',title:'Panel prices spike',text:'A tariff jolt pushed panel costs up ~30% for the next 3 weeks. Material costs on new jobs will sting.'}; }
+
+  if(e==='review'){ state.reputation=Math.min(100,state.reputation+rnd(2,4));
+    return {ic:'⭐',title:'Five-star review',text:'A happy customer raved about you online. Reputation jumped and leads will pick up.'}; }
+
+  if(e==='breakdown'){ const cost=Math.round(rnd(1200,2600)); spend(cost); coverShort();
+    if(cfg.truckDownWeeks>0 && state.trucks>0){ state.truckDownWeeks=cfg.truckDownWeeks;
+      return {ic:'🔧',title:'Truck breakdown',text:'A truck is down '+cfg.truckDownWeeks+' week'+(cfg.truckDownWeeks>1?'s':'')+' for repairs ('+money(cost)+'). You are short a job slot until it is back.'}; }
+    return {ic:'🔧',title:'Truck breakdown',text:'A truck threw a fit. Repairs ran '+money(cost)+'.'}; }
+
+  if(e==='referral'){ state.pendingReferral=true;
+    return {ic:'🤝',title:'Neighbor referral',text:'A finished job led to a warm referral. Expect a better-paying lead next week.'}; }
+
+  if(e==='itcUp'){ state.demandMultiplier=1.5; state.demandWeeks=4;
+    return {ic:'🏛️',title:'Tax credit boost',text:'The 30% federal solar tax credit got extended. Homeowner demand surges for 4 weeks.'}; }
+
+  if(e==='itcDown'){ state.demandMultiplier=0.6; state.demandWeeks=4;
+    return {ic:'🏛️',title:'Tax credit scare',text:'Talk of cutting the solar tax credit spooked buyers. Leads dry up a bit for 4 weeks.'}; }
+
+  if(e==='quit'){ state.installers--; if(cfg.quitFreezeWeeks>0) state.hireFreeze=cfg.quitFreezeWeeks;
+    return {ic:'🚪',title:'Installer quit',text:'One of your installers left for a competitor.'+(cfg.quitFreezeWeeks>0?' You cannot backfill for '+cfg.quitFreezeWeeks+' week'+(cfg.quitFreezeWeeks>1?'s':'')+' while you recruit a replacement.':'')}; }
+}
+function coverShort(){
+  if(state.cash<0){ const need=-state.cash; if(need<=availableCredit()){ state.loan+=need; state.cash=0; } }
+}
+
+/* ---------- end states ---------- */
+function bankrupt(){
+  state.gameOver=true; state.won=false; save(); render();
+  mountModal(
+    '<div class="ic">📉</div><h2>Bankrupt</h2>'+
+    '<p>You ran out of cash and credit in week '+state.week+'. It happens to a lot of real contractors, usually from cash-flow timing, not lack of sales.</p>'+
+    '<div class="row2"><button class="btn ghost" onclick="closeModal();render()">Look around</button>'+
+    '<button class="btn" onclick="newGame()">New company</button></div>'
+  );
+}
+function showWin(){
+  mountModal(
+    '<div class="ic">🏆</div><h2>You hit $1,000,000!</h2>'+
+    '<div class="big-num">'+money(netWorth())+'</div>'+
+    '<p>Net worth goal reached in <b>'+state.week+' weeks</b> with '+state.completedJobs+' jobs installed and '+money(state.revenueTotal)+' in lifetime revenue. Fewer weeks is a better score, see who can beat you.</p>'+
+    '<div class="row2"><button class="btn ghost" onclick="closeModal();render()">Keep playing</button>'+
+    '<button class="btn" onclick="newGame()">New company</button></div>'
+  );
+}
+
+/* ---------- modal / event UI ---------- */
+function mountModal(html){ $('modalMount').innerHTML='<div class="scrim"><div class="modal">'+html+'</div></div>'; }
+function closeModal(){ $('modalMount').innerHTML=''; }
+function showEvent(e){
+  mountModal('<div class="ic">'+e.ic+'</div><h2>'+e.title+'</h2><p>'+e.text+'</p>'+
+    '<div class="row2"><button class="btn" onclick="closeModal()">Got it</button></div>');
+  logMsg('<b>'+e.title+'.</b> '+e.text);
+}
+function toast(msg){
+  mountModal('<h2 style="font-size:18px">Hold on</h2><p>'+msg+'</p>'+
+    '<div class="row2"><button class="btn" onclick="closeModal()">OK</button></div>');
+}
+function confirmQuit(){
+  mountModal('<h2 style="font-size:19px">Menu</h2><p>Your game is saved automatically. What next?</p>'+
+    '<div class="row2"><button class="btn ghost" onclick="closeModal()">Keep playing</button>'+
+    '<button class="btn ghost" onclick="newGame()">New company</button></div>');
+}
+function newGame(){ closeModal(); $('game').classList.add('hidden'); $('start').classList.remove('hidden'); }
+
+/* ---------- logging ---------- */
+function logMsg(html){ state.log.unshift(html); if(state.log.length>8) state.log.pop(); }
+
+/* ---------- beginner coaching ----------
+   Non-blocking tips that teach a concept the first moment it matters.
+   Each fires once (tracked in state.seenTips), only in coaching mode,
+   and only one shows at a time (next appears after the player dismisses). */
+const COACH_TIPS = [
+  {id:'welcome', when:()=>true,
+   text:"Welcome to the solar business. Each week you take jobs from homeowners, your crew installs the panels, and you collect payment. Take a lead below, then tap <b>Advance week</b> to move time forward."},
+  {id:'tookJob', when:()=>state.jobs.length>0,
+   text:"You signed your first job. Notice you <b>paid for the panels up front</b> and banked a deposit. Your crew installs over the next few weeks. Staff about <b>3-4 people per job</b> for clean, fast work."},
+  {id:'overhead', when:()=>state.week>=2,
+   text:"Every week you pay <b>overhead</b> — crew wages and truck upkeep — whether or not you're installing. That's why an idle crew quietly drains your cash."},
+  {id:'crewLoad', when:()=>activeJobCount()>0,
+   text:"<b>Crew load</b> is how many people you have per active job. Too few and jobs crawl and fail inspection; too many and you're paying folks to stand around. Aim for 3-4."},
+  {id:'pendingPay', when:()=>cfg.payDelay>0 && receivables()>0,
+   text:"That <b>Pending pay</b> figure is money you've earned but haven't collected yet. In real solar you front the materials, then wait weeks for inspection and the utility to pay you. Managing that cash gap is the heart of the business."},
+  {id:'reputation', when:()=>state.completedJobs>0,
+   text:"You finished a job, and your <b>reputation</b> (the stars) reflects how well and how fast you work. Higher reputation pulls in more leads and bigger ones. Rushing or understaffing drags it down."},
+  {id:'marketing', when:()=>state.week>=3 && state.marketing===0,
+   text:"Want more leads? Slide <b>Marketing</b> up. More spend brings more homeowners your way, but it's a weekly cost with diminishing returns — find the sweet spot."},
+  {id:'credit', when:()=>state.loan>0,
+   text:"You tapped your <b>credit line</b> to cover a short week. It's a handy cushion, but it charges interest, so spare cash automatically pays it back down. Don't lean on it for long."},
+  {id:'summer', when:()=>cfg.seasonality && season().key==='summer',
+   text:"It's <b>summer</b> — peak season. Leads and install speed both climb. This is when solar companies make the money that carries them through the year."},
+  {id:'winter', when:()=>cfg.seasonality && season().key==='winter',
+   text:"<b>Winter</b> is here: leads dry up and installs slow down from short days and icy roofs. The busy months have to fund the slow ones, so head into winter with a cash cushion."}
+];
+function maybeCoach(){
+  if(!state || !cfg.coaching) return;
+  if(state.activeTip) return;                 // wait until the current tip is dismissed
+  for(const t of COACH_TIPS){
+    if(state.seenTips[t.id]) continue;
+    if(t.when()){ state.seenTips[t.id]=1; state.activeTip={id:t.id, text:t.text}; return; }
+  }
+}
+function dismissTip(){ if(!state) return; state.activeTip=null; save(); maybeCoach(); render(); }
+function renderCoach(){
+  const el=$('coachBar'); if(!el) return;
+  if(cfg.coaching && state.activeTip){
+    el.style.display='';
+    el.innerHTML='<div class="coach"><span class="coach-ic">💡</span>'+
+      '<div class="coach-txt">'+state.activeTip.text+'</div>'+
+      '<button class="coach-x" onclick="dismissTip()" aria-label="Dismiss tip">✕</button></div>';
+  } else { el.style.display='none'; el.innerHTML=''; }
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(!state) return;
+  $('coLabel').textContent = state.company;
+  $('coSub').textContent = (crewUnits())+'-person crew · '+state.trucks+' truck'+(state.trucks>1?'s':'');
+  $('modeBadge').textContent = cfg.label;
+  $('wkNum').textContent = state.week;
+  // season chip (Realistic only)
+  const sznEl=$('seasonChip');
+  if(sznEl){
+    if(cfg.seasonality){ const sz=season();
+      sznEl.style.display=''; sznEl.textContent=sz.ic+' '+sz.label;
+      sznEl.className='badge szn-'+sz.cls;
+      sznEl.title=sz.label+' — '+sz.note+'. '+weeksLeftInSeason()+' wk until the next season.';
+    } else { sznEl.style.display='none'; }
+  }
+  const eb=$('eventBanner');
+  if(eb){ if(state.lastEvent){ const e=state.lastEvent; eb.style.margin='7px 0 0'; eb.innerHTML='<span class="evt evt-'+(e.kind||'warn')+'"><span class="evt-ic">'+e.ic+'</span><b>'+e.title+'</b> <span class="evt-txt">'+e.text+'</span></span>'; } else { eb.style.margin='0'; eb.innerHTML=''; } }
+
+  // stats
+  const statCards = [
+    statCard('Cash', money(state.cash), state.cash<3000?'bad':'money'),
+    statCard('Net worth', money(netWorth()), ''),
+    statCard('Credit used', money(state.loan)+' / '+money(cfg.creditLimit), state.loan>cfg.creditLimit*0.7?'bad':''),
+    statCard('Reputation', '<span class="stars">'+stars(state.reputation)+'</span>', 'starcard')
+  ];
+  if(cfg.payDelay>0) statCards.push(statCard('Pending pay', money(receivables()), receivables()>0?'warn':''));
+  $('stats').innerHTML = statCards.join('');
+
+  // goal
+  const pct = Math.max(0,Math.min(100, netWorth()/GOAL*100));
+  $('goalFill').style.width = pct.toFixed(1)+'%';
+  $('goalPctTxt').textContent = Math.round(pct)+'%';
+
+  // jobs
+  renderJobs();
+  // leads
+  renderLeads();
+  // mgmt
+  $('crewD').textContent = '· '+money(cfg.installerSalary)+'/wk'+(state.hireQueue.length?' · +'+state.hireQueue.length+' recruiting':'')+(state.hireFreeze>0?' · backfill '+state.hireFreeze+'wk':'');
+  $('truckD').textContent = '· '+money(cfg.truckCost)+(state.truckQueue.length?' · +'+state.truckQueue.length+' arriving':'')+(state.truckDownWeeks>0?' · 1 down '+state.truckDownWeeks+'wk':'');
+  $('jobCap').textContent = state.jobs.length+' in pipeline · '+effectiveTrucks()+' active slot'+(effectiveTrucks()!==1?'s':'');
+  $('tally').textContent = state.completedJobs+' finished · '+money(state.revenueTotal)+' earned';
+  $('fireBtn').disabled = state.installers<=0;
+  $('sellBtn').disabled = state.trucks<=1;
+  $('mkt').value = state.marketing; $('mktVal').textContent = money(state.marketing)+'/wk';
+  updateOverheadLabel();
+  // staffing (crew per active job) drives quality / inspection pass rate
+  const s = staffing();
+  const staffEl = $('staff');
+  if(s.ratio===null){ staffEl.textContent='No active jobs'; staffEl.style.color='var(--muted)'; }
+  else { staffEl.textContent = s.ratio.toFixed(1)+' · '+s.label;
+    staffEl.style.color = s.cls==='good'?'var(--green)':(s.cls==='warn'?'var(--warn)':'var(--danger)'); }
+  // electricians (realistic only)
+  const elecRowEl=$('elecRow'), elecLoadRowEl=$('elecLoadRow');
+  if(cfg.needsElectricians){
+    if(elecRowEl) elecRowEl.style.display='';
+    if(elecLoadRowEl) elecLoadRowEl.style.display='';
+    if($('elecD')) $('elecD').textContent='· '+money(cfg.elecSalary)+'/wk';
+    if($('fireElecBtn')) $('fireElecBtn').disabled=(state.electricians||0)<=0;
+    const es=elecStaffing(), ee=$('elecStaff');
+    if(ee){ if(!es || es.ratio===null){ ee.textContent=(state.electricians||0)+' on staff'; ee.style.color='var(--muted)'; }
+      else { ee.textContent=es.ratio.toFixed(1)+' · '+es.label; ee.style.color=es.cls==='good'?'var(--green)':(es.cls==='warn'?'var(--warn)':'var(--danger)'); } }
+  } else { if(elecRowEl) elecRowEl.style.display='none'; if(elecLoadRowEl) elecLoadRowEl.style.display='none'; }
+  // materials inventory (realistic only)
+  const matRowEl=$('matRow');
+  if(cfg.inventory){ if(matRowEl) matRowEl.style.display=''; if($('matStock')) $('matStock').textContent=money(state.materialStock||0); }
+  else { if(matRowEl) matRowEl.style.display='none'; }
+  // weekly cash flow
+  const cf = state.lastCashFlow||0;
+  const cfEl = $('cashflow');
+  cfEl.textContent = (cf>0?'+':'')+money(cf);
+  cfEl.style.color = cf>=0 ? 'var(--green)' : 'var(--danger)';
+
+  // log
+  $('log').innerHTML = state.log.map(l=>'<div class="e">'+l+'</div>').join('') || '<div class="e">No activity yet.</div>';
+
+  // neighborhood / footprint
+  renderHood();
+  // animated crew + trucks
+  renderCrewYard();
+  // beginner coaching tip
+  renderCoach();
+}
+function statCard(k,v,cls){
+  return '<div class="stat"><p class="k">'+k+'</p><p class="v '+(cls==='starcard'?'':cls)+'">'+v+'</p></div>';
+}
+function updateOverheadLabel(){ if($('ovh')) $('ovh').textContent = '-'+money(overhead()); }
+
+/* a little roof that fills with solar panels as the install progresses */
+function roofSVG(pct, active){
+  const cols=4, rows=3, total=cols*rows;
+  const filled = active ? Math.min(total, Math.round(pct/100*total)) : 0;
+  const cw=12, ch=9, gap=2.4, x0=9, y0=9;
+  let cells='', idx=0;
+  for(let r=0;r<rows;r++){ for(let c=0;c<cols;c++){
+    const on=idx<filled, x=(x0+c*(cw+gap)).toFixed(1), y=(y0+r*(ch+gap)).toFixed(1);
+    cells+='<rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="1" fill="'+(on?'#185fa5':'#e3ebf1')+'" stroke="'+(on?'#0c447c':'#ccd8e1')+'" stroke-width="0.6"/>';
+    idx++;
+  }}
+  const sunOn = active && filled>=total;
+  return '<svg viewBox="0 0 80 60" width="72" height="54" style="flex:none;" aria-hidden="true">'+
+    '<rect x="4" y="4" width="62" height="50" rx="3" fill="#f6f8f6" stroke="#d7e0d7" stroke-width="1.4"/>'+
+    cells+
+    '<rect x="4" y="50" width="62" height="4" rx="2" fill="#cdd6cd"/>'+
+    '<circle cx="71" cy="9" r="6" fill="'+(sunOn?'#f6b833':'#e4e1d4')+'"/>'+
+    '</svg>';
+}
+
+/* a full house for the neighborhood strip: done = panels + sun, active = truck out front, empty = faint lot */
+function houseSVG(kind, pct, tint){
+  const total=8, cols=4, rows=2;
+  const filled = kind==='done'?total : (kind==='active'?Math.min(total,Math.round((pct||0)/100*total)):0);
+  const faint = kind==='empty';
+  const wall = faint?'#edf0ed':(tint||'#f3efe6');
+  const wallStroke = faint?'#dde3dd':'#d9d2c4';
+  const cw=10, ch=8, gap=1.8, x0=9, y0=8;
+  let cells='', idx=0;
+  for(let r=0;r<rows;r++){ for(let c=0;c<cols;c++){
+    const on=idx<filled, x=(x0+c*(cw+gap)).toFixed(1), y=(y0+r*(ch+gap)).toFixed(1);
+    const f=on?'#185fa5':(faint?'#edf0ed':'#e3ebf1'), st=on?'#0c447c':(faint?'#dde3dd':'#ccd8e1');
+    cells+='<rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="1" fill="'+f+'" stroke="'+st+'" stroke-width="0.5"/>';
+    idx++;
+  }}
+  let extra='';
+  if(kind==='done') extra='<circle cx="60" cy="8" r="4.5" fill="#f6b833"/>';
+  if(kind==='active') extra='<g><rect x="1" y="63" width="20" height="9" rx="1.5" fill="#d85a30"/><rect x="17" y="59" width="8" height="6" rx="1" fill="#d85a30"/><circle cx="7" cy="73" r="2.3" fill="#3a2a22"/><circle cx="19" cy="73" r="2.3" fill="#3a2a22"/></g>';
+  const dash = faint?' stroke-dasharray="3 2"':'';
+  return '<svg viewBox="0 0 66 78" width="60" height="71" style="flex:none;" aria-hidden="true">'+
+    '<rect x="4" y="4" width="54" height="28" rx="2.5" fill="'+(faint?'#edf0ed':'#f6f8f6')+'" stroke="'+wallStroke+'" stroke-width="1.2"'+dash+'/>'+
+    cells+
+    '<rect x="9" y="32" width="44" height="40" rx="2" fill="'+wall+'" stroke="'+wallStroke+'" stroke-width="1.2"'+dash+'/>'+
+    (faint?'':'<rect x="26" y="52" width="11" height="20" rx="1.5" fill="#cdb89a"/><rect x="14" y="40" width="8" height="8" rx="1" fill="#cfe0ec"/><rect x="40" y="40" width="8" height="8" rx="1" fill="#cfe0ec"/>')+
+    extra+
+    '</svg>';
+}
+function renderHood(){
+  const hood = $('hood'); if(!hood) return;
+  const active = state.jobs.filter(j=>j.stage==='install').slice(0, effectiveTrucks());
+  const doneCount = state.completedJobs;
+  if(active.length===0 && doneCount===0){
+    hood.innerHTML = '<div class="empty" style="padding:10px 4px;">Your neighborhood fills in as you finish installs. Sign a job to get building.</div>';
+    $('hoodTally').textContent='';
+    return;
+  }
+  const tints=['#f3efe6','#eef0e8','#f4ece6','#eaf0ee','#f1ece4','#efeee6'];
+  let html='';
+  active.forEach(j=>{ const pct=Math.min(100,j.workDone/j.workRequired*100); html+=houseSVG('active', pct); });
+  const showDone=Math.min(doneCount,24);
+  for(let i=0;i<showDone;i++) html+=houseSVG('done',100,tints[i%tints.length]);
+  html+=houseSVG('empty',0)+houseSVG('empty',0);
+  hood.innerHTML=html;
+  $('hoodTally').textContent = doneCount+' built · '+active.length+' in progress'+(doneCount>24?' · showing 24':'');
+}
+
+/* animated crew split across the trucks, mood reacts to staffing */
+function distributeCrew(total, trucks){
+  const base=Math.floor(total/trucks), rem=total%trucks, arr=[];
+  for(let i=0;i<trucks;i++) arr.push(base+(i<rem?1:0));
+  return arr;
+}
+function crewMood(){
+  const r=crewPerJob();
+  if(r===null) return 'bored';   // no active jobs -> idle
+  if(r<3) return 'over';         // fewer than 3 per job -> overworked
+  if(r>4) return 'bored';        // more than 4 per job -> idle hands
+  return 'ok';
+}
+function truckSVG(){
+  return '<svg viewBox="0 0 60 34" width="54" height="31" style="flex:none;" aria-hidden="true">'+
+    '<rect x="2" y="9" width="33" height="15" rx="2" fill="#3a6ea5"/>'+
+    '<path d="M35 13 h11 l6 6 v5 h-17 z" fill="#2b5688"/>'+
+    '<rect x="38" y="15" width="8" height="6" rx="1" fill="#bfe0f5"/>'+
+    '<rect x="2" y="24" width="51" height="3" fill="#274c73"/>'+
+    '<circle cx="13" cy="28" r="4.6" fill="#2c2c2a"/><circle cx="13" cy="28" r="1.8" fill="#8a8f8a"/>'+
+    '<circle cx="44" cy="28" r="4.6" fill="#2c2c2a"/><circle cx="44" cy="28" r="1.8" fill="#8a8f8a"/>'+
+    '</svg>';
+}
+function person(mood, elec){ return '<div class="person '+mood+(elec?' elec':'')+'"><div class="hat"></div><div class="head"></div><div class="torso"></div></div>'; }
+function renderCrewYard(){
+  const el=$('yard'); if(!el) return;
+  const trucks=state.trucks, crew=crewUnits(), dist=distributeCrew(crew,trucks), mood=crewMood();
+  const elecDist = cfg.needsElectricians ? distributeCrew(state.electricians||0, trucks) : null;
+  let html='';
+  for(let t=0;t<trucks;t++){
+    const n=dist[t]; let ppl=''; const show=Math.min(n,4);
+    for(let p=0;p<show;p++) ppl+=person(mood);
+    if(n>4) ppl+='<span class="more">+'+(n-4)+'</span>';
+    if(elecDist){ const e=elecDist[t], eshow=Math.min(e,3); for(let p=0;p<eshow;p++) ppl+=person('ok', true); if(e>3) ppl+='<span class="more">+'+(e-3)+'</span>'; }
+    if(n===0 && (!elecDist || elecDist[t]===0)) ppl='<span class="more">no crew</span>';
+    html+='<div class="truckgroup">'+truckSVG()+'<div class="crewrow">'+ppl+'</div></div>';
+  }
+  el.innerHTML=html;
+  const cap=$('yardCap'); if(!cap) return;
+  const r=crewPerJob();
+  if(mood==='over'){
+    if(r!==null && r<2){ cap.textContent='Crew is slammed. Way too few hands for the jobs running. Hire help fast.'; cap.style.color='var(--danger)'; }
+    else { cap.textContent='Crew is stretched thin. Keeping up, but another hand would help.'; cap.style.color='var(--warn)'; }
+  }
+  else if(mood==='bored'){ cap.textContent=(r===null)?'No active jobs. The crew is idle on the clock.':'Crew is standing around. You are paying for idle hands. Run more jobs or trim the team.'; cap.style.color='var(--warn)'; }
+  else { cap.textContent='Crew is dialed in. Good balance of people to jobs.'; cap.style.color='var(--green)'; }
+}
+
+function renderJobs(){
+  if(state.jobs.length===0){ $('jobs').innerHTML='<div class="empty">No active jobs. Accept a lead to put your crew to work.</div>'; return; }
+  const eT = effectiveTrucks();
+  const installList = state.jobs.filter(j=>j.stage==='install');
+  const activeSet = installList.slice(0, eT);
+  const rate = (crewUnits()*cfg.crewSpeed/3)/Math.max(1, Math.min(eT, installList.length)) * elecFactor() * seasonSpeed();
+  $('jobs').innerHTML = state.jobs.map(j=>{
+    const pct = Math.min(100, j.workDone/j.workRequired*100);
+    let roofPct, roofOn, status;
+    if(j.stage==='permit'){ roofPct=0; roofOn=false; status='Permit pending · ~'+j.permitLeft+' wk · '+j.roof; }
+    else if(j.stage==='await'){ roofPct=100; roofOn=true; status='Installed · payment in ~'+j.awaitLeft+' wk · '+j.roof; }
+    else { const isActive=activeSet.indexOf(j)>=0; roofPct=pct; roofOn=isActive;
+      const left=Math.max(0, Math.ceil((j.workRequired-j.workDone)/Math.max(0.01, rate)));
+      status=isActive ? ('Installing · '+Math.round(pct)+'% · ~'+left+' wk left · '+j.roof) : ('Queued · needs a free truck · '+j.roof); }
+    return '<div class="job" style="display:flex;gap:12px;align-items:center;">'+
+      roofSVG(roofPct, roofOn)+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="jr"><b>'+j.street+' · '+j.kW+' kW</b><span class="pay">+'+money(j.remaining)+'</span></div>'+
+        '<div class="bar'+(roofOn?'':' queue')+'"><i style="width:'+roofPct.toFixed(0)+'%"></i></div>'+
+        '<p class="sub">'+status+'</p>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+function renderLeads(){
+  $('leadHint').textContent = cfg.seasonality ? (season().ic+' '+season().label+' · '+season().note) : '';
+  if(state.leads.length===0){ $('leads').innerHTML='<div class="empty">No leads left this week. Advance to next week (raise marketing for more).</div>'; return; }
+  $('leads').innerHTML = state.leads.map(l=>{
+    const fromStock = cfg.inventory ? Math.min(state.materialStock||0, l.materialCost) : 0;
+    const upfront = (l.materialCost - fromStock) - l.deposit;
+    const tag = upfront>0 ? ' · <b style="color:var(--danger)">costs '+money(upfront)+' up front</b>' : (fromStock>0 ? ' · <b style="color:var(--green)">stock covers materials</b>' : '');
+    return '<div class="lead"><div class="li">'+
+      '<b>'+l.street+' · '+l.kW+' kW'+(l.referral?' · referral':'')+'</b>'+
+      '<p>'+l.roof+' · pays '+money(l.revenue)+
+        '<span class="ld-detail"> · materials '+money(l.materialCost)+' · deposit '+money(l.deposit)+' · '+l.workRequired+' crew-wk</span>'+
+        tag+'</p>'+
+      '</div><div style="white-space:nowrap;display:flex;gap:6px;align-items:center;">'+
+      '<button class="btn sm" onclick="acceptLead('+l.id+')">Take job</button>'+
+      '<button class="btn ghost sm" onclick="declineLead('+l.id+')">Pass</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+/* ---------- save / load ---------- */
+function save(){ try{ localStorage.setItem('solarTycoonSave', JSON.stringify({state, mode:state.mode})); }catch(e){} }
+function resumeGame(){
+  try{
+    const raw=localStorage.getItem('solarTycoonSave'); if(!raw){ toastStart('No saved game found yet.'); return; }
+    const data=JSON.parse(raw); state=data.state; cfg=MODES[state.mode]||MODES.realistic;
+    // migrate older saves to the new job lifecycle / pipeline fields
+    state.hireQueue=state.hireQueue||[]; state.truckQueue=state.truckQueue||[]; state.hireFreeze=state.hireFreeze||0; state.truckDownWeeks=state.truckDownWeeks||0;
+    state.electricians=state.electricians||0; state.materialStock=state.materialStock||0;
+    state.seenTips=state.seenTips||{}; state.activeTip=state.activeTip||null;
+    state.jobs.forEach(j=>{ if(!j.stage){ j.stage='install'; j.permitLeft=0; j.awaitLeft=0; } });
+    leadSeq = Math.max(0, ...state.leads.map(l=>l.id), ...state.jobs.map(j=>j.id));
+    $('mkt').max=cfg.mktMax;
+    showGame();
+    if(state.gameOver){ state.won? showWin() : render(); }
+  }catch(e){ toastStart('Could not read the saved game.'); }
+}
+function toastStart(msg){ mountModal('<p style="margin:6px 0 16px">'+msg+'</p><div class="row2"><button class="btn" onclick="closeModal()">OK</button></div>'); }
+
+/* show/hide resume button based on save presence */
+(function(){ try{ if(!localStorage.getItem('solarTycoonSave')) $('resumeBtn').classList.add('hidden'); }catch(e){ $('resumeBtn').classList.add('hidden'); } })();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>
