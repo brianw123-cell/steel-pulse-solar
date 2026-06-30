@@ -179,13 +179,16 @@
     .wrap{padding:8px;}
     .frozen{padding:2px 0 2px;}
     .top{padding:6px 11px;margin-bottom:6px;}
-    .frozen .top{gap:5px !important;}
-    .hdrow1, .hdrow2{gap:5px 10px !important;}
-    .hdrow2{padding-top:5px !important;}
-    .co{gap:8px;}
-    .co .dot{width:24px;height:24px;}
-    .co b{font-size:15px;line-height:1.2;}
+    .frozen .top{gap:4px !important;}
+    .hdrow1{gap:8px !important;align-items:center;}
+    .hdrow2{gap:5px 10px !important;padding-top:5px !important;}
+    .co{gap:7px;min-width:0;}
+    .co > div{min-width:0;}
+    .co .dot{width:22px;height:22px;flex:none;}
+    .co b{font-size:14px;line-height:1.15;}
     .co span{font-size:11px;}
+    .cosub-extra{display:none;}
+    #advanceBtn{padding:8px 13px !important;font-size:13.5px !important;}
     .badge{padding:1px 6px;font-size:10px;}
     .wk{font-size:12.5px;}
     .track{width:80px !important;height:8px;}
@@ -493,7 +496,7 @@ function startGame(){
     pendingReferral:false,
     completedJobs:0, revenueTotal:0, prevWeekCash:cfg.startCash, lastCashFlow:0,
     hireQueue:[], hireFreeze:0, truckQueue:[], truckDownWeeks:0, lastEvent:null,
-    electricians:0, materialStock:0,
+    electricians:0, elecHireQueue:[], materialStock:0,
     seenTips:{}, activeTip:null,
     log:[], gameOver:false, won:false
   };
@@ -593,7 +596,11 @@ function hireInstaller(){
   save(); render();
 }
 function fireInstaller(){ if(state.installers<=0) return; state.installers--; logMsg('Laid off an installer to cut overhead.'); save(); render(); }
-function hireElectrician(){ state.electricians=(state.electricians||0)+1; logMsg('Hired a licensed electrician. Payroll is up '+money(cfg.elecSalary)+'/week.'); save(); render(); }
+function hireElectrician(){
+  if(cfg.hireLeadWeeks>0){ state.elecHireQueue.push(cfg.hireLeadWeeks); logMsg('Started recruiting a licensed electrician. Joins in '+cfg.hireLeadWeeks+' week'+(cfg.hireLeadWeeks>1?'s':'')+' (no payroll until then).'); }
+  else { state.electricians=(state.electricians||0)+1; logMsg('Hired a licensed electrician. Payroll is up '+money(cfg.elecSalary)+'/week.'); }
+  save(); render();
+}
 function fireElectrician(){ if((state.electricians||0)<=0) return; state.electricians--; logMsg('Let an electrician go.'); save(); render(); }
 function buyPanels(amount){
   if(!cfg.inventory) return;
@@ -680,6 +687,12 @@ function advanceWeek(){
     const joined = state.hireQueue.filter(w=>w<=0).length;
     if(joined>0){ state.installers+=joined; logMsg(joined+' new installer'+(joined>1?'s':'')+' started. Payroll is up.'); }
     state.hireQueue = state.hireQueue.filter(w=>w>0);
+  }
+  if(state.elecHireQueue.length){
+    state.elecHireQueue = state.elecHireQueue.map(w=>w-1);
+    const joinedE = state.elecHireQueue.filter(w=>w<=0).length;
+    if(joinedE>0){ state.electricians=(state.electricians||0)+joinedE; logMsg(joinedE+' licensed electrician'+(joinedE>1?'s':'')+' started. Payroll is up.'); }
+    state.elecHireQueue = state.elecHireQueue.filter(w=>w>0);
   }
   if(state.hireFreeze>0) state.hireFreeze--;
 
@@ -893,7 +906,7 @@ function renderCoach(){
 function render(){
   if(!state) return;
   $('coLabel').textContent = state.company;
-  $('coSub').textContent = (crewUnits())+'-person crew · '+state.trucks+' truck'+(state.trucks>1?'s':'');
+  $('coSub').innerHTML = (crewUnits())+'-person crew<span class="cosub-extra"> · '+state.trucks+' truck'+(state.trucks>1?'s':'')+'</span>';
   $('modeBadge').textContent = cfg.label;
   $('wkNum').textContent = state.week;
   // season chip (Realistic only)
@@ -947,7 +960,7 @@ function render(){
   if(cfg.needsElectricians){
     if(elecRowEl) elecRowEl.style.display='';
     if(elecLoadRowEl) elecLoadRowEl.style.display='';
-    if($('elecD')) $('elecD').textContent='· '+money(cfg.elecSalary)+'/wk';
+    if($('elecD')) $('elecD').textContent='· '+money(cfg.elecSalary)+'/wk'+(state.elecHireQueue&&state.elecHireQueue.length?' · +'+state.elecHireQueue.length+' recruiting':'');
     if($('fireElecBtn')) $('fireElecBtn').disabled=(state.electricians||0)<=0;
     const es=elecStaffing(), ee=$('elecStaff');
     if(ee){ if(!es || es.ratio===null){ ee.textContent=(state.electricians||0)+' on staff'; ee.style.color='var(--muted)'; }
@@ -1143,7 +1156,7 @@ function resumeGame(){
     const data=JSON.parse(raw); state=data.state; cfg=MODES[state.mode]||MODES.realistic;
     // migrate older saves to the new job lifecycle / pipeline fields
     state.hireQueue=state.hireQueue||[]; state.truckQueue=state.truckQueue||[]; state.hireFreeze=state.hireFreeze||0; state.truckDownWeeks=state.truckDownWeeks||0;
-    state.electricians=state.electricians||0; state.materialStock=state.materialStock||0;
+    state.electricians=state.electricians||0; state.elecHireQueue=state.elecHireQueue||[]; state.materialStock=state.materialStock||0;
     state.seenTips=state.seenTips||{}; state.activeTip=state.activeTip||null;
     state.jobs.forEach(j=>{ if(!j.stage){ j.stage='install'; j.permitLeft=0; j.awaitLeft=0; } });
     leadSeq = Math.max(0, ...state.leads.map(l=>l.id), ...state.jobs.map(j=>j.id));
