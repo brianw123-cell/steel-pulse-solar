@@ -21,14 +21,15 @@
     --chip:#f1efe8; --accent:#185fa5; --accentbg:#e6f1fb;
   }
   *{box-sizing:border-box;}
+  html{overflow-x:hidden;}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;}
+    color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw;}
   button{font-family:inherit;cursor:pointer;}
   .wrap{max-width:1040px;margin:0 auto;padding:16px;}
   .hidden{display:none !important;}
 
   /* Start screen */
-  .start{max-width:680px;margin:6vh auto;padding:0 16px;}
+  .start{max-width:680px;margin:3vh auto;padding:0 16px;}
   .sun{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe39a,#f6b833);
     margin:0 auto 14px;box-shadow:0 0 0 10px rgba(246,184,51,.18);}
   .start h1{text-align:center;font-size:34px;margin:0 0 4px;letter-spacing:-.5px;}
@@ -52,6 +53,11 @@
   .btn.ghost:hover{background:#f6f8f6;}
   .btn.sm{padding:7px 12px;font-size:13px;border-radius:8px;}
   .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .howwrap{margin-top:14px;border-top:1px solid var(--line);}
+  .howwrap > summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--ink);list-style:none;padding:10px 0 2px;}
+  .howwrap > summary::-webkit-details-marker{display:none;}
+  .howwrap > summary::before{content:'▸  ';color:var(--muted);}
+  .howwrap[open] > summary::before{content:'▾  ';}
 
   /* Top bar */
   .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
@@ -126,6 +132,10 @@
   .evt-warn{background:#fbeecb;color:#8a5a00;}
   .person.elec .torso{background:#2f6fb0;}
   .person.elec .hat{background:#e8b923;}
+  .person.pending{opacity:.42;}
+  .person.pending .torso{background:#9aa39d;}
+  .person.pending .hat{background:#c2c6bf;}
+  .person.pending.elec .torso{background:#8fa7bf;}
   .frozen{position:sticky;top:0;z-index:30;background:var(--bg);padding:8px 0 4px;box-shadow:0 9px 16px -12px rgba(20,33,28,.4);}
   .frozen .top, .frozen .goal{margin-bottom:8px;}
   .yard{display:flex;gap:16px;align-items:flex-end;overflow-x:auto;padding:4px 2px 6px;min-height:46px;}
@@ -178,7 +188,8 @@
   @media(max-width:560px){
     .wrap{padding:8px;}
     .frozen{padding:2px 0 2px;}
-    .top{padding:6px 11px;margin-bottom:6px;}
+    .top{padding:5px 11px;margin-bottom:5px;}
+    .co .dot{margin-top:1px;}
     .frozen .top{gap:4px !important;}
     .hdrow1{gap:8px !important;align-items:center;}
     .hdrow2{gap:5px 10px !important;padding-top:5px !important;}
@@ -188,15 +199,15 @@
     .co b{font-size:14px;line-height:1.15;}
     .co span{font-size:11px;}
     .cosub-extra{display:none;}
-    #advanceBtn{padding:8px 13px !important;font-size:13.5px !important;}
+    #advanceBtn{padding:8px 13px !important;font-size:13.5px !important;line-height:1.15;text-align:center;max-width:42vw;}
     .badge{padding:1px 6px;font-size:10px;}
     .wk{font-size:12.5px;}
     .track{width:80px !important;height:8px;}
     #mkt{width:100px !important;}
-    .stats{gap:5px;margin-bottom:6px;}
-    .stat{padding:3px 9px;}
-    .stat .k{font-size:10px;}
-    .stat .v{font-size:14.5px;}
+    .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-bottom:6px;}
+    .stat{padding:3px 7px;}
+    .stat .k{font-size:9px;}
+    .stat .v{font-size:12.5px;}
     .panel{padding:8px 10px;margin-bottom:7px !important;}
     .panel h2{font-size:13.5px;margin-bottom:5px;}
     .crew3{gap:0 14px;}
@@ -211,6 +222,17 @@
     .coach-txt{font-size:12.5px;line-height:1.4;}
     .evt{display:flex;align-items:flex-start;}
     .ld-detail{display:none;}
+    /* start screen: shrink header, no sideways drift */
+    .start{margin:2vh auto;}
+    .sun{width:54px;height:54px;margin-bottom:10px;}
+    .start h1{font-size:27px;}
+    .start .tag{font-size:14px;margin-bottom:14px;}
+    .card{padding:14px 15px;}
+    .modes{gap:9px;}
+    .mode{padding:11px;}
+    .mode h3{font-size:15px;}
+    .mode p{font-size:12px;}
+    .co b{display:block;max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   }
 </style>
 </head>
@@ -223,30 +245,29 @@
   <p class="tag">Run a solar-install company. Win jobs, manage cash, build a crew, hit $1,000,000.</p>
 
   <div class="card">
-    <h2>Start a new company</h2>
-    <label class="fld" for="coname">Company name</label>
-    <input type="text" id="coname" value="Steel Pulse Solar" maxlength="28" />
-
-    <div class="modes" id="modes">
+    <div class="modes" id="modes" style="margin-top:0;">
       <div class="mode sel" data-mode="realistic">
         <h3>Realistic</h3>
-        <p>Real solar margins, tighter cash, tougher events. Learn the business.</p>
+        <p>Real margins, tighter cash. Learn the business.</p>
       </div>
       <div class="mode" data-mode="arcade">
         <h3>Beginner</h3>
-        <p>New to solar? Learn how the business works with gentler money, plain-language coaching, and no pressure.</p>
+        <p>Gentler money, plain-language coaching.</p>
       </div>
     </div>
 
-    <ul class="how">
-      <li><b>Each turn is one week.</b> Accept jobs, assign nothing (your crew auto-works the active jobs), then click Advance week.</li>
-      <li><b>Watch cash, not just sales.</b> You pay for panels up front and collect a deposit, then get the rest when the job finishes.</li>
-      <li><b>Staff each job with about 3-4 crew.</b> Too few and quality drops and jobs crawl, too many and you pay idle hands. More trucks let you run more jobs at once.</li>
-      <li><b>Goal:</b> grow net worth to $1,000,000. Hit $0 cash with no credit left and you go bankrupt.</li>
-    </ul>
-
     <button class="btn block" onclick="startGame()">Start company</button>
     <button class="btn ghost block" id="resumeBtn" onclick="resumeGame()" style="margin-top:8px;">Resume saved game</button>
+
+    <details class="howwrap">
+      <summary>How to play</summary>
+      <ul class="how">
+        <li><b>Each turn is one week.</b> Accept jobs, assign nothing (your crew auto-works the active jobs), then tap Move forward one week.</li>
+        <li><b>Watch cash, not just sales.</b> You pay for panels up front and collect a deposit, then get the rest when the job finishes.</li>
+        <li><b>Staff each job with about 3-4 crew.</b> Too few and quality drops and jobs crawl, too many and you pay idle hands. More trucks let you run more jobs at once.</li>
+        <li><b>Goal:</b> grow net worth to $1,000,000. Hit $0 cash with no credit left and you go bankrupt.</li>
+      </ul>
+    </details>
   </div>
   <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:14px;">Tip: bookmark this file or host it free to share with friends. Progress saves in your browser.</p>
 </div>
@@ -255,20 +276,20 @@
 <div id="game" class="wrap hidden">
 
   <div class="frozen">
-  <div class="top" style="flex-direction:column;align-items:stretch;gap:7px;">
+  <div class="top" style="flex-direction:column;align-items:stretch;gap:5px;">
     <!-- row 1: company (left) + Advance week (top, always reachable) -->
-    <div class="hdrow1" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-      <div class="co">
+    <div class="hdrow1" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+      <div class="co" style="align-items:flex-start;">
         <div class="dot"></div>
-        <div>
-          <b id="coLabel">Steel Pulse Solar</b><br>
-          <span id="coSub">1-crew operation</span> <span class="badge" id="modeBadge">Realistic</span>
+        <div style="min-width:0;line-height:1.2;">
+          <b id="coLabel">Steel Pulse Solar</b>
+          <div style="margin-top:1px;"><span id="coSub">1-crew operation</span> <span class="badge" id="modeBadge">Realistic</span></div>
         </div>
       </div>
-      <button class="btn" onclick="advanceWeek()" id="advanceBtn" style="padding:9px 16px;font-size:15px;white-space:nowrap;flex:none;">Advance week ▸</button>
+      <button class="btn" onclick="advanceWeek()" id="advanceBtn" style="padding:9px 14px;font-size:15px;flex:none;text-align:center;line-height:1.15;">Move forward<br>one week ▸</button>
     </div>
     <!-- row 2: week + season + goal + marketing -->
-    <div class="hdrow2" style="display:flex;align-items:center;gap:7px 12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:7px;">
+    <div class="hdrow2" style="display:flex;align-items:center;gap:5px 10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:5px;">
       <span class="wk" style="white-space:nowrap;">Week <b id="wkNum">1</b></span>
       <span id="seasonChip" class="badge" style="display:none;"></span>
       <span style="font-size:12.5px;color:var(--muted);white-space:nowrap;">Goal $1M</span>
@@ -368,6 +389,10 @@
   <div class="panel" style="margin-bottom:10px;">
     <h2>Job log <span class="n" id="tally"></span></h2>
     <div class="log" id="log" style="margin-top:0;max-height:240px;overflow-y:auto;"></div>
+  </div>
+
+  <div style="text-align:center;margin:2px 0 22px;">
+    <button class="btn ghost sm" onclick="confirmReset()">↺ Start over</button>
   </div>
 </div>
 
@@ -485,7 +510,8 @@ function genLeads(){
 function startGame(){
   const modeKey = document.querySelector('.mode.sel').dataset.mode;
   cfg = MODES[modeKey];
-  const name = ($('coname').value||'Steel Pulse Solar').trim();
+  const nameEl = $('coname');
+  const name = ((nameEl && nameEl.value) || 'Steel Pulse Solar').trim();
   state = {
     mode:modeKey, company:name, week:1,
     cash:cfg.startCash, loan:0, reputation:cfg.startRep,
@@ -853,6 +879,12 @@ function confirmQuit(){
     '<button class="btn ghost" onclick="newGame()">New company</button></div>');
 }
 function newGame(){ closeModal(); $('game').classList.add('hidden'); $('start').classList.remove('hidden'); }
+function confirmReset(){
+  mountModal('<div class="ic">↺</div><h2>Start over?</h2>'+
+    '<p>This ends your current company and starts a brand-new game. You can\'t undo it.</p>'+
+    '<div class="row2"><button class="btn ghost" onclick="closeModal()">Keep playing</button>'+
+    '<button class="btn" onclick="newGame()">Yes, start over</button></div>');
+}
 
 /* ---------- logging ---------- */
 function logMsg(html){ state.log.unshift(html); if(state.log.length>8) state.log.pop(); }
@@ -909,6 +941,8 @@ function render(){
   $('coSub').innerHTML = (crewUnits())+'-person crew<span class="cosub-extra"> · '+state.trucks+' truck'+(state.trucks>1?'s':'')+'</span>';
   $('modeBadge').textContent = cfg.label;
   $('wkNum').textContent = state.week;
+  const advBtn=$('advanceBtn');
+  if(advBtn){ advBtn.innerHTML='Move forward<br>one week ▸'; advBtn.style.whiteSpace='normal'; }
   // season chip (Realistic only)
   const sznEl=$('seasonChip');
   if(sznEl){
@@ -1093,6 +1127,15 @@ function renderCrewYard(){
     if(elecDist){ const e=elecDist[t], eshow=Math.min(e,3); for(let p=0;p<eshow;p++) ppl+=person('ok', true); if(e>3) ppl+='<span class="more">+'+(e-3)+'</span>'; }
     if(n===0 && (!elecDist || elecDist[t]===0)) ppl='<span class="more">no crew</span>';
     html+='<div class="truckgroup">'+truckSVG()+'<div class="crewrow">'+ppl+'</div></div>';
+  }
+  // recruited-but-not-yet-joined workers: show immediately as faded "arriving" figures
+  const pendI = state.hireQueue ? state.hireQueue.length : 0;
+  const pendE = state.elecHireQueue ? state.elecHireQueue.length : 0;
+  if(pendI+pendE>0){
+    let pend='';
+    for(let p=0;p<Math.min(pendI,4);p++) pend+=person('pending');
+    for(let p=0;p<Math.min(pendE,3);p++) pend+=person('pending',true);
+    html+='<div class="truckgroup"><div class="crewrow" title="Recruiting — not on site yet">'+pend+'<span class="more">arriving</span></div></div>';
   }
   el.innerHTML=html;
   const cap=$('yardCap'); if(!cap) return;
